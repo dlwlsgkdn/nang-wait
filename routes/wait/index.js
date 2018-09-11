@@ -4,7 +4,8 @@ module.exports = function(app){
     const cookieParse = require('cookie-parse');
     const router = express.Router();
     const namespace = app.io.of('/wait');
-    const consumer = app.consumer;
+    const nextActiveConsumer = app.nextActiveConsumer;
+    const monitoringConsumer = app.monitoringConsumer;
 
     var rooms = [];
 
@@ -52,22 +53,34 @@ module.exports = function(app){
         //소켓 연결 종료
         socket.on('disconnect', (reason) => {
             console.log(socket.uuid + ' disconnected. ' + reason);
+            removeWaiting(socket.uuid);
         });
     });
 
     //카프카 컨슈머
-    consumer.on('message', function (message) {
-       const value = JSON.parse(message.value);
+    monitoringConsumer.on('message', function (message) {
+        const value = JSON.parse(message.value);
        
-       waitNumbers = value.waiting;
-       waitMinutes = value.waiting * 5;
+        waitNumbers = value.waiting;
+        waitMinutes = value.waiting * 3;
 
-       namespace.emit('wait number', waitNumbers);
-       namespace.emit('wait minute', waitMinutes);
+        namespace.emit('wait number', waitNumbers);
+        namespace.emit('wait minute', waitMinutes);
     });
      
-    consumer.on('error', function (err) {
-       console.log('error', err);
+    monitoringConsumer.on('error', function (err) {
+        console.log('error', err);
+    });
+
+    nextActiveConsumer.on('message', function (message) {
+        console.log(message.value);
+        const value = JSON.parse(message.value);
+
+        passWaiting(value.uuid);
+    });
+    
+    nextActiveConsumer.on('error', function (err) {
+        console.log('error', err);
     });
 
     /**

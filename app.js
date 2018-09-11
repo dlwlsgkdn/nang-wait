@@ -7,13 +7,13 @@ const { HighLevelConsumer, Client } = require('kafka-node');
 app.io = io;
 app.clientDir = __dirname + '/client';
 
-var topic = 'Monitoring'; //+ Monitoring, Statistics
 var client = new Client('59.6.40.128:2181');
-var topics = [{ topic: topic }];
+var topics = [{ topic: 'Monitoring' }];
 var options = { autoCommit: true, fetchMaxWaitMs: 1000, fetchMaxBytes: 1024 * 1024, groupId: 'dlwlsgkdn' };
-var consumer = new HighLevelConsumer(client, topics, options);
+app.monitoringConsumer = new HighLevelConsumer(client, topics, options);
 
-app.consumer = consumer;
+topics = [{ topic: 'NextActive' }];
+app.nextActiveConsumer = new HighLevelConsumer(client, topics, options);
 
 app.use(cookieParser());
 
