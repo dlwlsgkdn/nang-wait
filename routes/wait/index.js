@@ -4,7 +4,8 @@ module.exports = function(app){
     const router = express.Router();
     const namespace = app.io.of('/wait');
     const consumer = app.consumer;
-    
+
+    var uuid = '';
     var seq = '';
     var rooms = [];
 
@@ -12,12 +13,16 @@ module.exports = function(app){
     var waitMinutes = 0;
 
 	router.get('/wait', function(req, res){
+        uuid = req.cookies.uuid;
         seq = req.query.seq;
         res.sendFile(req.app.clientDir + '/wait.html');
     });
 
     namespace.on('connection', (socket) => {
+        
+        socket.uuid = uuid;
         socket.seq = seq;
+
         if (socket.seq) rooms.push(seq);
         else socket.disconnect(true);
 
