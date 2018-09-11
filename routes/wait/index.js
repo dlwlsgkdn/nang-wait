@@ -1,8 +1,9 @@
 module.exports = function(app){
 
-	var express = require('express');
-    var router = express.Router();
+	const express = require('express');
+    const router = express.Router();
     const namespace = app.io.of('/wait');
+    const consumer = app.consumer;
     
     var seq = '';
     var rooms = [];
@@ -58,6 +59,15 @@ module.exports = function(app){
             console.log(socket.seq + ' disconnected. ' + reason);
             removeWaiting(socket.seq);
         });
+    });
+
+    //카프카 컨슈머
+    consumer.on('message', function (message) {
+       console.log(message);
+    });
+     
+    consumer.on('error', function (err) {
+       console.log('error', err);
     });
 
     /**
