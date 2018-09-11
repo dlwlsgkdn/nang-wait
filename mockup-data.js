@@ -16,10 +16,11 @@ module.exports = function startMockupConsuming(onMessage) {
 	}, 1000)
 }
 
+var wait = [30, ...createArray(106, () => Math.random() < 0.3).map(tf => tf ? parseInt(Math.random() * 30) : 0)]
 var mockup = {
 	'incoming': [10000, 1300, 341, 100, 200, 32, 32, ...createArray(100, randInt(15))],
 	'bounce': createArray(107, randInt(200)),
-	'enter': enter,
+	'enter': wait,
 	'tps': enter.map(ex => ex + (Math.random() < 0.3 ? parseInt(Math.random() * 30) : 0))
 }
 

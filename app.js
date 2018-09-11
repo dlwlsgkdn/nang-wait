@@ -20,6 +20,6 @@ app.use(cookieParser());
 app.use(require('./routes/index.js')(app));
 app.use(require('./routes/wait/index.js')(app));
 
-http.listen(3000, () => {
-  console.log('Connected at 3000');
+http.listen(8080, () => {
+  console.log('Connected at 8080');
 });
