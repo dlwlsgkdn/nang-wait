@@ -4,12 +4,15 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const { HighLevelConsumer, Client } = require('kafka-node');
 
+var webServerHost = '172.30.1.31';
+
 app.io = io;
 app.clientDir = __dirname + '/client';
+app.webServerHost = webServerHost;
 
-var client = new Client('59.6.40.128:2181');
+var client = new Client(webServerHost + ':2181');
 var topics = [{ topic: 'Monitoring' }];
-var options = { autoCommit: true, fetchMaxWaitMs: 1000, fetchMaxBytes: 1024 * 1024, groupId: 'dlwlsgkdn' };
+var options = { autoCommit: true, fetchMaxWaitMs: 1000, fetchMaxBytes: 1024 * 1024, groupId: 'jinhalee2' };
 app.monitoringConsumer = new HighLevelConsumer(client, topics, options);
 
 topics = [{ topic: 'NextActive' }];

@@ -13,19 +13,22 @@
             <div style="text-align: center">
                 <i class="fa fa-gear fa-spin" style="font-size:150px; color: rgb(180, 224, 255)" ></i>
             </div>
-            <div style="text-align: center; color: rgb(180, 180, 180)">
-                Total <strong id="wait-number"></strong> people are waiting for you.
+            <div style="text-align: center; color: rgb(180, 180, 180); font-size: 60px">
+                대기인원 : <strong id="wait-number"></strong> 명
             </div>
-            <div style="text-align: center; color: rgb(180, 180, 180)">
-                Please Wait <strong id="wait-minute"></strong> minutes.
+            <div style="text-align: center; color: rgb(180, 180, 180); font-size: 60px">
+                예상대기시간 : <strong id="wait-time"></strong> 초
             </div>
         </div>
         <script>
             $(() => {
                 const socket = io('/wait');
 
-                socket.on('client connected', (clients) => {
-                    $('#wait-list').append($('<li>').text(clients));
+                socket.on('client connected', (client) => {
+                    socket.uuid = client.uuid;
+                    socket.seq = client.seq;
+                    socket.exp = client.exp;
+                    $('#wait-list').append($('<li>').text(client));
                 });
 
                 //대기열 통과
@@ -35,13 +38,15 @@
                 });
 
                 //대기시간 업데이트
-                socket.on('wait minute', (minute) => {
-                    $('#wait-minute').text(minute);
+                socket.on('wait time', (time) => {
+                    const waitSec = socket.seq - time;
+                    $('#wait-time').text(waitSec * 30);
                 });
 
                 //대기인원 업데이트
                 socket.on('wait number', (number) => {
-                    $('#wait-number').text(number);
+                    const waitNum = socket.seq - number;
+                    $('#wait-number').text(waitNum);
                 });
             });
         </script>
